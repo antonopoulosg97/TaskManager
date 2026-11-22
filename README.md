@@ -67,13 +67,32 @@ dotnet ef database update --project TaskManager
 
 ### 4. Run the API
 
+The API runs over HTTPS. Trust the .NET development certificate once per machine, so the browser accepts it:
+
+```bash
+dotnet dev-certs https --trust
+```
+
+Then start the API:
+
 ```bash
 dotnet run --project TaskManager
 ```
 
-The API runs at `http://localhost:5244`. To use HTTPS at `https://localhost:7144`, add `--launch-profile https`.
+The API runs at `https://localhost:7000`.
 
-On first start, the app creates an admin user from `Admin:Username` and `Admin:Password`. The OpenAPI document is at `/openapi/v1.json`.
+On first start, the app creates an admin user from `Admin:Username` and `Admin:Password`.
+
+### Swagger
+
+In Development, Swagger UI is at `https://localhost:7000/swagger`. The OpenAPI document it reads is at `/openapi/v1.json`.
+
+To call protected routes from Swagger:
+
+1. Call `POST /api/v1/auth/login` and copy the `token` from the response.
+2. Click **Authorize** and paste only the token, without the word `Bearer`.
+
+Each route shows its description and its possible responses.
 
 ### Connecting a frontend
 

@@ -10,8 +10,7 @@ ASP.NET Core Web API (.NET 10, `net10.0`) for a task/project manager, backed by 
 
 ```bash
 dotnet build TaskManager.slnx
-dotnet run --project TaskManager                      # http://localhost:5244
-dotnet run --project TaskManager --launch-profile https  # https://localhost:7144
+dotnet run --project TaskManager   # https://localhost:7000
 ```
 
 - OpenAPI document is served at `/openapi/v1.json` in Development only.
