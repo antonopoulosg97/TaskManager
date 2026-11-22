@@ -9,6 +9,7 @@ using TaskManager.Handlers;
 using TaskManager.Repositories;
 using TaskManager.Security;
 using TaskManager.Services;
+using Microsoft.OpenApi;
 
 namespace TaskManager
 {
@@ -77,21 +78,43 @@ namespace TaskManager
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            builder.Services.AddOpenApi(options =>
+            {
+                options.AddDocumentTransformer((document, context, cancellationToken) =>
+                {
+                    document.Components ??= new OpenApiComponents();
+                    document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+                    document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
+                    {
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "bearer",
+                        BearerFormat = "JWT"
+                    };
 
-            
+                    document.Security ??= new List<OpenApiSecurityRequirement>();
+                    document.Security.Add(new OpenApiSecurityRequirement
+                    {
+                        [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
+                    });
+
+                    return Task.CompletedTask;
+                });
+            });
+
+
 
             var app = builder.Build();
             await DbSeeder.SeedAdminAsync(app.Services);
 
             // Configure the HTTP request pipeline.
             app.UseExceptionHandler();
+            app.UseHttpsRedirection();
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "TaskManager v1"));
             }
 
-            app.UseHttpsRedirection();
             app.UseCors("Frontend");
             app.UseAuthentication();
             app.UseAuthorization();

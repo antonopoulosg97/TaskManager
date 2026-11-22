@@ -15,7 +15,14 @@ namespace TaskManager.Controllers
             _userService = userService;
         }
 
-
+        /// <summary>
+        /// Registers a new user account. Anyone can register, and new users get the EMPLOYEE role.
+        /// </summary>
+        /// <param name="signupDTO">The new user's username, password, first name, last name and optional phone number.</param>
+        /// <returns>The created user.</returns>
+        /// <response code="201">Returns the created user.</response>
+        /// <response code="400">If the request body is invalid.</response>
+        /// <response code="409">If the username is already taken.</response>
         [HttpPost("register/user")]
         [ProducesResponseType(typeof(UserReadOnlyDTO),StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -33,6 +40,15 @@ namespace TaskManager.Controllers
                 );
                 
         }
+
+        /// <summary>
+        /// Authenticates a user and returns a JWT token if credentials are valid.
+        /// </summary>
+        /// <param name="signInDTO">The user's username and password.</param>
+        /// <returns>A JWT token and its expiry time.</returns>
+        /// <response code="200">Returns the JWT token and its expiry time.</response>
+        /// <response code="400">If the request body is invalid.</response>
+        /// <response code="401">If the username or password is incorrect.</response>
 
         [HttpPost("login")]
         [ProducesResponseType(typeof(TokenDTO), StatusCodes.Status200OK)]
